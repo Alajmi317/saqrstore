@@ -156,7 +156,7 @@
         <button class="btn" onclick="openOrder(null)">طلب مخصص</button>
       </div>
       <div style="margin-top:14px" class="note">
-        تنبيه: هذه الواجهة وحدها لا ترسل للديسكورد. الإرسال يتم عبر السيرفر (Node.js) الموجود بالأسفل.
+        تنبيه: الإرسال هنا يعمل عبر Netlify Function (بدون localhost) — فقط تأكد أنك رفعت ملفات الـ functions وضبطت متغير الويبهوك في Netlify.
       </div>
     </div>
 
@@ -291,10 +291,10 @@
         <div class="full">
           <button class="btn primary full" onclick="submitOrder()">إرسال الطلب للديسكورد</button>
           <div class="note" style="margin-top:10px">
-            الإرسال يتم إلى API: <span style="font-family:var(--mono)">POST /api/order</span> — ستشغله من Node.js بالأسفل.
+            الإرسال يتم عبر: <span style="font-family:var(--mono)">/.netlify/functions/order</span>
           </div>
           <div class="status ok" id="okBox">تم إرسال الطلب بنجاح.</div>
-          <div class="status bad" id="badBox">تعذر إرسال الطلب. تأكد من تشغيل السيرفر وإعداد Webhook.</div>
+          <div class="status bad" id="badBox">تعذر إرسال الطلب. راجع إعدادات Netlify Functions و Environment Variables.</div>
         </div>
 
       </div>
@@ -303,7 +303,9 @@
 </div>
 
 <script>
-  const API_BASE = "http://localhost:3000"; // غيّرها عند الاستضافة (مثال: https://yourdomain.com)
+  // مهم: بعد التعديل، لم نعد نستخدم localhost أو API_BASE
+  // الإرسال صار إلى Netlify Function مباشرة:
+  // /.netlify/functions/order
 
   const products = [
     { id:"p1", cat:"scripts", tag:"SCRIPT", name:"[QB] Advanced HUD", desc:"HUD متطور متوافق مع QBCore + إعدادات كاملة.", price:7.5, meta:["QBCore","Config","Optimized"] },
@@ -366,7 +368,6 @@
     document.getElementById("mDesc").textContent = p ? p.desc : "اكتب تفاصيل طلبك.";
     document.getElementById("modalBg").style.display = "flex";
 
-    // reset status
     document.getElementById("okBox").style.display = "none";
     document.getElementById("badBox").style.display = "none";
 
@@ -374,7 +375,7 @@
   }
 
   function closeModal(e){
-    if(e && e.target.id !== "modalBg") return;
+    if(e && e.target && e.target.id !== "modalBg") return;
     document.getElementById("modalBg").style.display = "none";
   }
 
@@ -398,23 +399,28 @@
       createdAt: new Date().toISOString()
     };
 
-    // basic validation
     if(!payload.customer.name || !payload.customer.discord || !payload.details){
       showBad("فضلاً: الاسم + Discord + تفاصيل الطلب مطلوبة.");
       return;
     }
 
     try{
-      const res = await fetch(`${API_BASE}/api/order`,{
+      // إرسال إلى Netlify Function
+      const res = await fetch("/.netlify/functions/order", {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify(payload)
       });
 
-      if(!res.ok) throw new Error("HTTP "+res.status);
-      showOk("تم إرسال الطلب بنجاح.");
+      if(!res.ok){
+        let extra = "";
+        try { extra = await res.text(); } catch {}
+        throw new Error("HTTP " + res.status + (extra ? " | " + extra : ""));
+      }
+
+      showOk("تم إرسال الطلب بنجاح ووصل للديسكورد.");
     }catch(err){
-      showBad("تعذر إرسال الطلب. تأكد من تشغيل السيرفر وإعداد الـ Webhook.");
+      showBad("تعذر إرسال الطلب. تأكد من: (1) وجود netlify/functions/order.js (2) وجود netlify.toml (3) إضافة DISCORD_WEBHOOK_URL في Netlify. تفاصيل: " + (err && err.message ? err.message : ""));
     }
   }
 
