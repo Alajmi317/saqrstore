@@ -427,7 +427,7 @@ input, textarea, select{
           ${p.meta.map(m => `<div class="pill">${m}</div>`).join("")}
         </div>
         <div class="priceRow">
-          <div class="price">${p.price.toFixed(2)} KWD</div>
+          <div class="price">${p.price.toFixed(2)} $</div>
           <div class="small">Digital</div>
         </div>
         <div class="btnRow">
@@ -488,7 +488,7 @@ input, textarea, select{
     const embed = {
       title: "طلب جديد - SAQR STORE",
       description: payload.product
-        ? `المنتج: ${payload.product.name}\nالسعر: ${payload.product.price} KWD\nID: ${payload.product.id}`
+        ? `المنتج: ${payload.product.name}\nالسعر: ${payload.product.price} $\nID: ${payload.product.id}`
         : "طلب مخصص",
       fields: [
         { name: "الاسم", value: payload.customer.name || "—", inline: true },
