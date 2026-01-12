@@ -148,15 +148,15 @@
     <div class="card heroCard">
       <h1 class="heroTitle">بيع ملفات FiveM باحتراف، وتسليم سريع</h1>
       <p class="heroP">
-        اختر المنتج، ارفع بياناتك (Discord ID / Server Name)، وارسِل الطلب. سيتم إرسال الطلب مباشرة لقناة الديسكورد الخاصة بك.
-        يمكنك لاحقًا إضافة الدفع الإلكتروني (مثل Stripe) والتسليم التلقائي عبر روابط أو مفاتيح.
+        اختر المنتج، ارفع بياناتك (Discord ID / Server Name)، وارسِل الطلب.
+        سيتم إرسال الطلب مباشرة لقناة الديسكورد عبر Webhook.
       </p>
       <div class="ctaRow">
         <button class="btn primary" onclick="scrollToEl('products')">تصفح المنتجات</button>
         <button class="btn" onclick="openOrder(null)">طلب مخصص</button>
       </div>
       <div style="margin-top:14px" class="note">
-        تنبيه: الإرسال هنا يعمل عبر Netlify Function (بدون localhost) — فقط تأكد أنك رفعت ملفات الـ functions وضبطت متغير الويبهوك في Netlify.
+        ملاحظة: هذه النسخة ترسل مباشرة للويبهوك (مجاني) — لكن الويبهوك سيكون داخل الكود وقد ينكشف، استخدمه كبداية فقط.
       </div>
     </div>
 
@@ -203,8 +203,7 @@
       <ol class="note" style="margin:0; padding-inline-start:18px">
         <li>اختر المنتج واضغط “اطلب الآن”.</li>
         <li>اكتب بياناتك (اسمك، Discord، بيانات السيرفر) وأرسل الطلب.</li>
-        <li>سيصل الطلب لقناة ديسكورد عندك عبر Webhook مع كل التفاصيل.</li>
-        <li>بعد الدفع (حسب طريقتك)، تسلّم الملف (يدويًا أو تلقائيًا لاحقًا).</li>
+        <li>سيصل الطلب لقناة الديسكورد عندك عبر Webhook مع كل التفاصيل.</li>
       </ol>
     </div>
   </div>
@@ -291,10 +290,10 @@
         <div class="full">
           <button class="btn primary full" onclick="submitOrder()">إرسال الطلب للديسكورد</button>
           <div class="note" style="margin-top:10px">
-            الإرسال يتم عبر: <span style="font-family:var(--mono)">/.netlify/functions/order</span>
+            الإرسال مباشر إلى Discord Webhook (مجاني).
           </div>
           <div class="status ok" id="okBox">تم إرسال الطلب بنجاح.</div>
-          <div class="status bad" id="badBox">تعذر إرسال الطلب. راجع إعدادات Netlify Functions و Environment Variables.</div>
+          <div class="status bad" id="badBox">فشل الإرسال. تأكد من الويبهوك.</div>
         </div>
 
       </div>
@@ -303,9 +302,9 @@
 </div>
 
 <script>
-  // مهم: بعد التعديل، لم نعد نستخدم localhost أو API_BASE
-  // الإرسال صار إلى Netlify Function مباشرة:
-  // /.netlify/functions/order
+  // ضع الويبهوك هنا (لا تشارك الرابط مع أحد)
+  // بدّل PUT_DISCORD_WEBHOOK_HERE بالويبهوك الحقيقي
+  const DISCORD_WEBHOOK_URL = "PUT_DISCORD_WEBHOOK_HERE";
 
   const products = [
     { id:"p1", cat:"scripts", tag:"SCRIPT", name:"[QB] Advanced HUD", desc:"HUD متطور متوافق مع QBCore + إعدادات كاملة.", price:7.5, meta:["QBCore","Config","Optimized"] },
@@ -404,23 +403,43 @@
       return;
     }
 
+    if(!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === "PUT_DISCORD_WEBHOOK_HERE"){
+      showBad("حط رابط الويبهوك داخل الكود أولًا (DISCORD_WEBHOOK_URL).");
+      return;
+    }
+
+    const embed = {
+      title: "طلب جديد - SAQR STORE",
+      description: payload.product
+        ? `المنتج: ${payload.product.name}\nالسعر: ${payload.product.price} KWD\nID: ${payload.product.id}`
+        : "طلب مخصص",
+      fields: [
+        { name: "الاسم", value: payload.customer.name || "—", inline: true },
+        { name: "Discord", value: payload.customer.discord || "—", inline: true },
+        { name: "Framework", value: payload.customer.framework || "—", inline: true },
+        { name: "اسم السيرفر", value: payload.customer.serverName || "—", inline: true },
+        { name: "الدفع", value: payload.payment || "—", inline: true },
+        { name: "Email", value: payload.customer.email || "—", inline: true },
+        { name: "تفاصيل الطلب", value: (payload.details || "—").slice(0, 1000) }
+      ],
+      footer: { text: payload.createdAt }
+    };
+
     try{
-      // إرسال إلى Netlify Function
-      const res = await fetch("/.netlify/functions/order", {
+      const res = await fetch(DISCORD_WEBHOOK_URL, {
         method:"POST",
         headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ embeds: [embed] })
       });
 
       if(!res.ok){
-        let extra = "";
-        try { extra = await res.text(); } catch {}
-        throw new Error("HTTP " + res.status + (extra ? " | " + extra : ""));
+        const t = await res.text().catch(()=> "");
+        throw new Error("HTTP " + res.status + (t ? (" | " + t) : ""));
       }
 
-      showOk("تم إرسال الطلب بنجاح ووصل للديسكورد.");
+      showOk("تم إرسال الطلب ووصل للديسكورد.");
     }catch(err){
-      showBad("تعذر إرسال الطلب. تأكد من: (1) وجود netlify/functions/order.js (2) وجود netlify.toml (3) إضافة DISCORD_WEBHOOK_URL في Netlify. تفاصيل: " + (err && err.message ? err.message : ""));
+      showBad("فشل الإرسال. (قد يكون الويبهوك خاطئ/محذوف أو تم حظره بسبب السبام). تفاصيل: " + (err && err.message ? err.message : ""));
     }
   }
 
