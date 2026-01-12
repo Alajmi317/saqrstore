@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SAQR STORE | FiveM Files</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#0f1621; --panel2:#0b1220;
+    --text:#e6eefc; --muted:#9bb0d0; --border:rgba(255,255,255,.10);
+    --accent:#3b82f6; --accent2:#8b5dff; --danger:#ff5d7a; --ok:#22c55e;
+    --radius:14px; --shadow:0 18px 50px rgba(0,0,0,.55);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Arabic", sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:var(--sans); background:radial-gradient(1200px 600px at 20% -10%, rgba(59,130,246,.25), transparent 55%),
+                                      radial-gradient(1000px 600px at 120% 20%, rgba(139,93,255,.20), transparent 60%),
+                                      var(--bg);
+       color:var(--text);}
+  a{color:inherit}
+  header{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter: blur(10px);
+    background: rgba(11,15,20,.65);
+    border-bottom:1px solid var(--border);
+  }
+  .wrap{max-width:1200px; margin:0 auto; padding:18px 18px;}
+  .topbar{display:flex; align-items:center; justify-content:space-between; gap:16px;}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.5px}
+  .badge{font-family:var(--mono); font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:999px; color:var(--muted)}
+  nav{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+  nav a{padding:8px 10px; border-radius:10px; text-decoration:none; color:var(--muted); border:1px solid transparent}
+  nav a:hover{color:var(--text); border-color:var(--border); background:rgba(255,255,255,.03)}
+  .hero{padding:34px 18px 10px}
+  .heroGrid{display:grid; grid-template-columns: 1.2fr .8fr; gap:18px; align-items:stretch}
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+  .heroCard{padding:22px}
+  .heroTitle{font-size:34px; margin:0 0 10px}
+  .heroP{margin:0 0 18px; color:var(--muted); line-height:1.8}
+  .ctaRow{display:flex; gap:10px; flex-wrap:wrap}
+  .btn{
+    appearance:none; border:1px solid var(--border);
+    background:rgba(255,255,255,.03); color:var(--text);
+    padding:12px 14px; border-radius:12px; cursor:pointer;
+    font-weight:800;
+  }
+  .btn.primary{border-color:rgba(59,130,246,.5); background:linear-gradient(135deg, rgba(59,130,246,.25), rgba(139,93,255,.15))}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn:hover{background:rgba(255,255,255,.06)}
+  .sideCard{padding:18px}
+  .sideTitle{margin:0 0 10px; font-size:16px}
+  .kv{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+  .kv .item{padding:12px; border:1px solid var(--border); border-radius:12px; background:rgba(0,0,0,.18)}
+  .k{font-size:12px; color:var(--muted)}
+  .v{font-weight:900; margin-top:6px}
+  .section{padding:14px 18px 34px}
+  .sectionTitle{font-size:18px; margin:0 0 12px}
+  .toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:14px}
+  .search{
+    flex: 1 1 280px;
+    display:flex; gap:10px; align-items:center;
+    padding:12px 12px; border-radius:12px;
+    border:1px solid var(--border); background:rgba(0,0,0,.18);
+  }
+  .search input{
+    width:100%; border:none; outline:none; background:transparent; color:var(--text);
+    font-family:var(--sans); font-weight:700;
+  }
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{
+    padding:10px 12px; border-radius:999px; border:1px solid var(--border);
+    background:rgba(255,255,255,.03); color:var(--muted); cursor:pointer; font-weight:800; font-size:13px;
+  }
+  .chip.active{color:var(--text); border-color:rgba(59,130,246,.45); background:rgba(59,130,246,.12)}
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  .p{padding:16px}
+  .pHead{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+  .tag{font-family:var(--mono); font-size:11px; padding:6px 8px; border-radius:999px; border:1px solid var(--border); color:var(--muted)}
+  .name{margin:8px 0 0; font-size:16px}
+  .desc{margin:8px 0 0; color:var(--muted); line-height:1.7; font-size:13px}
+  .meta{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+  .pill{padding:8px 10px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,.18); font-size:12px; color:var(--muted)}
+  .priceRow{display:flex; align-items:center; justify-content:space-between; margin-top:14px; gap:10px}
+  .price{font-weight:900; font-size:18px}
+  .small{font-size:12px; color:var(--muted)}
+  .btnRow{display:flex; gap:10px; margin-top:12px}
+  .btn.full{width:100%}
+  .modalBg{
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    display:none; align-items:center; justify-content:center; padding:18px; z-index:100;
+  }
+  .modal{max-width:720px; width:100%; border-radius:18px; overflow:hidden}
+  .modalTop{padding:14px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); background:rgba(0,0,0,.25)}
+  .modalBody{padding:16px; background:rgba(255,255,255,.03)}
+  .form{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+  .form .full{grid-column:1/-1}
+  label{font-size:12px; color:var(--muted); font-weight:800}
+  input, textarea, select{
+    width:100%; margin-top:6px; padding:12px 12px; border-radius:12px;
+    border:1px solid var(--border); background:rgba(0,0,0,.22); color:var(--text);
+    outline:none; font-family:var(--sans); font-weight:700;
+  }
+  textarea{min-height:90px; resize:vertical}
+  .note{font-size:12px; color:var(--muted); line-height:1.7}
+  .status{margin-top:10px; padding:10px 12px; border-radius:12px; border:1px solid var(--border); display:none}
+  .status.ok{border-color:rgba(34,197,94,.5); background:rgba(34,197,94,.10)}
+  .status.bad{border-color:rgba(255,93,122,.5); background:rgba(255,93,122,.10)}
+  footer{padding:22px 18px; border-top:1px solid var(--border); color:var(--muted); text-align:center}
+  @media (max-width: 980px){
+    .heroGrid{grid-template-columns:1fr}
+    .grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width: 640px){
+    .grid{grid-template-columns:1fr}
+    .form{grid-template-columns:1fr}
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg, rgba(59,130,246,.45), rgba(139,93,255,.35));border:1px solid var(--border);display:grid;place-items:center;font-weight:900">S</div>
+        <div>
+          <div style="font-size:16px">SAQR STORE</div>
+          <div class="badge">FiveM Digital Files</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#products">المنتجات</a>
+        <a href="#how">طريقة الشراء</a>
+        <a href="#support">الدعم</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap heroGrid">
+    <div class="card heroCard">
+      <h1 class="heroTitle">بيع ملفات FiveM باحتراف، وتسليم سريع</h1>
+      <p class="heroP">
+        اختر المنتج، ارفع بياناتك (Discord ID / Server Name)، وارسِل الطلب. سيتم إرسال الطلب مباشرة لقناة الديسكورد الخاصة بك.
+        يمكنك لاحقًا إضافة الدفع الإلكتروني (مثل Stripe) والتسليم التلقائي عبر روابط أو مفاتيح.
+      </p>
+      <div class="ctaRow">
+        <button class="btn primary" onclick="scrollToEl('products')">تصفح المنتجات</button>
+        <button class="btn" onclick="openOrder(null)">طلب مخصص</button>
+      </div>
+      <div style="margin-top:14px" class="note">
+        تنبيه: هذه الواجهة وحدها لا ترسل للديسكورد. الإرسال يتم عبر السيرفر (Node.js) الموجود بالأسفل.
+      </div>
+    </div>
+
+    <div class="card sideCard">
+      <h3 class="sideTitle">لوحة مختصرة</h3>
+      <div class="kv">
+        <div class="item"><div class="k">تسليم</div><div class="v">يدوي/تلقائي</div></div>
+        <div class="item"><div class="k">إشعارات</div><div class="v">Discord</div></div>
+        <div class="item"><div class="k">الدفع</div><div class="v">روابط (مبدئيًا)</div></div>
+        <div class="item"><div class="k">لغة</div><div class="v">عربي</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section" id="products">
+  <div class="wrap">
+    <div class="toolbar">
+      <h2 class="sectionTitle">المنتجات</h2>
+      <div class="chips">
+        <button class="chip active" data-cat="all" onclick="setCat('all')">الكل</button>
+        <button class="chip" data-cat="scripts" onclick="setCat('scripts')">Scripts</button>
+        <button class="chip" data-cat="maps" onclick="setCat('maps')">Maps</button>
+        <button class="chip" data-cat="cars" onclick="setCat('cars')">Cars</button>
+        <button class="chip" data-cat="packs" onclick="setCat('packs')">Packs</button>
+      </div>
+    </div>
+
+    <div class="search">
+      <span style="color:var(--muted);font-family:var(--mono)">SEARCH</span>
+      <input id="q" placeholder="ابحث عن منتج… (مثال: QB, ESX, MLO)" oninput="render()" />
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="wrap">
+    <h2 class="sectionTitle">طريقة الشراء</h2>
+    <div class="card p">
+      <ol class="note" style="margin:0; padding-inline-start:18px">
+        <li>اختر المنتج واضغط “اطلب الآن”.</li>
+        <li>اكتب بياناتك (اسمك، Discord، بيانات السيرفر) وأرسل الطلب.</li>
+        <li>سيصل الطلب لقناة ديسكورد عندك عبر Webhook مع كل التفاصيل.</li>
+        <li>بعد الدفع (حسب طريقتك)، تسلّم الملف (يدويًا أو تلقائيًا لاحقًا).</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="support">
+  <div class="wrap">
+    <h2 class="sectionTitle">الدعم</h2>
+    <div class="card p">
+      <div class="note">
+        ضع هنا روابطك: ديسكورد السيرفر / واتساب / تذاكر الدعم.
+      </div>
+      <div class="btnRow" style="margin-top:12px">
+        <a class="btn full" href="#" onclick="alert('حط رابط ديسكورد الدعم هنا'); return false;">دخول ديسكورد الدعم</a>
+        <a class="btn full" href="#" onclick="alert('حط رقم واتساب الدعم هنا'); return false;">واتساب الدعم</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 SAQR STORE — FiveM Digital Files
+</footer>
+
+<!-- Modal -->
+<div class="modalBg" id="modalBg" onclick="closeModal(event)">
+  <div class="card modal" onclick="event.stopPropagation()">
+    <div class="modalTop">
+      <div style="font-weight:900">إرسال طلب</div>
+      <button class="btn" onclick="closeModal()">إغلاق</button>
+    </div>
+    <div class="modalBody">
+      <div class="form">
+        <div class="full">
+          <div class="tag" id="mTag">—</div>
+          <div class="name" id="mName" style="margin-top:10px">طلب مخصص</div>
+          <div class="desc" id="mDesc">اكتب تفاصيل طلبك.</div>
+        </div>
+
+        <div>
+          <label>الاسم</label>
+          <input id="cName" placeholder="مثال: عبدالله" />
+        </div>
+
+        <div>
+          <label>Discord ID / Username</label>
+          <input id="cDiscord" placeholder="مثال: abdullah#0001 أو @abdullah" />
+        </div>
+
+        <div>
+          <label>نوع السيرفر</label>
+          <select id="cFramework">
+            <option value="QBCore">QBCore</option>
+            <option value="ESX">ESX</option>
+            <option value="Standalone">Standalone</option>
+            <option value="غير معروف">غير معروف</option>
+          </select>
+        </div>
+
+        <div>
+          <label>اسم السيرفر</label>
+          <input id="cServer" placeholder="اسم السيرفر" />
+        </div>
+
+        <div class="full">
+          <label>تفاصيل الطلب</label>
+          <textarea id="cDetails" placeholder="اكتب أي تفاصيل (نسخة السكربت/متطلبات/تركيب/تخصيص...)"></textarea>
+        </div>
+
+        <div>
+          <label>وسيلة الدفع (مبدئيًا)</label>
+          <select id="cPay">
+            <option value="WhatsApp / تحويل">WhatsApp / تحويل</option>
+            <option value="Link / Invoice">Link / Invoice</option>
+            <option value="Later">لاحقًا</option>
+          </select>
+        </div>
+
+        <div>
+          <label>إيميل (اختياري للتسليم)</label>
+          <input id="cEmail" placeholder="example@mail.com" />
+        </div>
+
+        <div class="full">
+          <button class="btn primary full" onclick="submitOrder()">إرسال الطلب للديسكورد</button>
+          <div class="note" style="margin-top:10px">
+            الإرسال يتم إلى API: <span style="font-family:var(--mono)">POST /api/order</span> — ستشغله من Node.js بالأسفل.
+          </div>
+          <div class="status ok" id="okBox">تم إرسال الطلب بنجاح.</div>
+          <div class="status bad" id="badBox">تعذر إرسال الطلب. تأكد من تشغيل السيرفر وإعداد Webhook.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = "http://localhost:3000"; // غيّرها عند الاستضافة (مثال: https://yourdomain.com)
+
+  const products = [
+    { id:"p1", cat:"scripts", tag:"SCRIPT", name:"[QB] Advanced HUD", desc:"HUD متطور متوافق مع QBCore + إعدادات كاملة.", price:7.5, meta:["QBCore","Config","Optimized"] },
+    { id:"p2", cat:"maps", tag:"MLO", name:"Premium MLO Pack", desc:"حزمة MLO فخمة (عدة مواقع) مع أداء ممتاز.", price:12.0, meta:["MLO","Optimized","Pack"] },
+    { id:"p3", cat:"cars", tag:"VEH", name:"Exclusive Car Pack", desc:"حزمة سيارات بجودة عالية + ملفات جاهزة للتركيب.", price:9.0, meta:["Cars","Handling","Pack"] },
+    { id:"p4", cat:"packs", tag:"BUNDLE", name:"Starter Server Pack", desc:"باقة بداية للسيرفر (أساسيات + سكربتات مختارة).", price:20.0, meta:["Bundle","Setup","Support"] },
+    { id:"p5", cat:"scripts", tag:"SCRIPT", name:"[ESX] Police Job Pro", desc:"وظيفة شرطة احترافية متوافقة مع ESX.", price:8.0, meta:["ESX","Job","UI"] },
+    { id:"p6", cat:"maps", tag:"MLO", name:"City Spot MLO", desc:"موقع واحد فخم داخل المدينة مع تفاصيل دقيقة.", price:6.0, meta:["MLO","Single","Details"] },
+  ];
+
+  let cat = "all";
+
+  function scrollToEl(id){ document.getElementById(id).scrollIntoView({behavior:"smooth"}); }
+
+  function setCat(c){
+    cat = c;
+    document.querySelectorAll(".chip").forEach(x => x.classList.toggle("active", x.dataset.cat === c));
+    render();
+  }
+
+  function matches(p, q){
+    if(!q) return true;
+    const hay = (p.name+" "+p.desc+" "+p.cat+" "+p.meta.join(" ")).toLowerCase();
+    return hay.includes(q.toLowerCase());
+  }
+
+  function render(){
+    const q = document.getElementById("q").value.trim();
+    const list = products.filter(p => (cat==="all" ? true : p.cat===cat) && matches(p, q));
+
+    const grid = document.getElementById("grid");
+    grid.innerHTML = list.map(p => `
+      <div class="card p">
+        <div class="pHead">
+          <div>
+            <div class="tag">${p.tag}</div>
+            <div class="name">${p.name}</div>
+          </div>
+          <div class="small">${p.cat.toUpperCase()}</div>
+        </div>
+        <div class="desc">${p.desc}</div>
+        <div class="meta">
+          ${p.meta.map(m => `<div class="pill">${m}</div>`).join("")}
+        </div>
+        <div class="priceRow">
+          <div class="price">${p.price.toFixed(2)} KWD</div>
+          <div class="small">Digital</div>
+        </div>
+        <div class="btnRow">
+          <button class="btn primary full" onclick="openOrder('${p.id}')">اطلب الآن</button>
+        </div>
+      </div>
+    `).join("") || `<div class="note">لا توجد نتائج.</div>`;
+  }
+
+  function openOrder(productId){
+    const p = products.find(x => x.id === productId);
+    document.getElementById("mTag").textContent = p ? p.tag : "CUSTOM";
+    document.getElementById("mName").textContent = p ? p.name : "طلب مخصص";
+    document.getElementById("mDesc").textContent = p ? p.desc : "اكتب تفاصيل طلبك.";
+    document.getElementById("modalBg").style.display = "flex";
+
+    // reset status
+    document.getElementById("okBox").style.display = "none";
+    document.getElementById("badBox").style.display = "none";
+
+    window.__selectedProduct = p || null;
+  }
+
+  function closeModal(e){
+    if(e && e.target.id !== "modalBg") return;
+    document.getElementById("modalBg").style.display = "none";
+  }
+
+  async function submitOrder(){
+    const payload = {
+      product: window.__selectedProduct ? {
+        id: window.__selectedProduct.id,
+        name: window.__selectedProduct.name,
+        tag: window.__selectedProduct.tag,
+        price: window.__selectedProduct.price
+      } : null,
+      customer: {
+        name: document.getElementById("cName").value.trim(),
+        discord: document.getElementById("cDiscord").value.trim(),
+        framework: document.getElementById("cFramework").value,
+        serverName: document.getElementById("cServer").value.trim(),
+        email: document.getElementById("cEmail").value.trim()
+      },
+      payment: document.getElementById("cPay").value,
+      details: document.getElementById("cDetails").value.trim(),
+      createdAt: new Date().toISOString()
+    };
+
+    // basic validation
+    if(!payload.customer.name || !payload.customer.discord || !payload.details){
+      showBad("فضلاً: الاسم + Discord + تفاصيل الطلب مطلوبة.");
+      return;
+    }
+
+    try{
+      const res = await fetch(`${API_BASE}/api/order`,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      showOk("تم إرسال الطلب بنجاح.");
+    }catch(err){
+      showBad("تعذر إرسال الطلب. تأكد من تشغيل السيرفر وإعداد الـ Webhook.");
+    }
+  }
+
+  function showOk(msg){
+    const ok = document.getElementById("okBox");
+    const bad = document.getElementById("badBox");
+    bad.style.display="none";
+    ok.textContent = msg;
+    ok.style.display="block";
+  }
+  function showBad(msg){
+    const ok = document.getElementById("okBox");
+    const bad = document.getElementById("badBox");
+    ok.style.display="none";
+    bad.textContent = msg;
+    bad.style.display="block";
+  }
+
+  render();
+</script>
+</body>
+</html>
